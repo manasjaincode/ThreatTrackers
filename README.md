@@ -12,7 +12,7 @@ Indore, a city heavily reliant on the Narmada River for its water supply, faces 
 - Inability to detect and address leakages.
 - Unequal distribution of water.
 
-![Problem Diagram](https://w7.pngwing.com/pngs/823/692/png-transparent-sukhliya-indore-indore-municipal-corporation-depalpur-nagar-nigam-others-food-city-logo.png)
+![Problem Diagram](https://th.bing.com/th/id/OIP.sr8feX1hpB6gwitYNA5_kAHaCv?rs=1&pid=ImgDetMain)
 
 ---
 
