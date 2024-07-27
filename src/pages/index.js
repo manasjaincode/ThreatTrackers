@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Link as ScrollLink, Element as ScrollElement } from 'react-scroll';
+import { FaLinkedin, FaInstagram, FaFacebook } from 'react-icons/fa'; // Importing social media icons
 
 // Register the necessary components for Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -55,6 +56,7 @@ const Widget = () => {
         ],
     });
 
+ const [data, setData] = useState([]);
     const [detailChartData, setDetailChartData] = useState(null);
     const [selectedArea, setSelectedArea] = useState(null);
     const [inputId, setInputId] = useState('');
@@ -153,17 +155,29 @@ const Widget = () => {
             }));
         }
     };
+
+    useEffect(() => {
+      fetch('http://localhost:4000/api/data')
+        .then((response) => response.json())
+        .then((data) => setData(data));
+    }, []);
+  
+    if (!data) {
+      return <div>Loading...</div>;
+    }
+  
+  
     const handleSubmit = async (e) => {
-      e.preventByDefault();
+      e.preventDefault();
   
       const formData = new FormData();
-      formData.append('name', formData.name);
-      formData.append('phone', formData.phone);
-      formData.append('location', formData.location);
-      formData.append('issue', formData.issue);
-      formData.append('description', formData.description);
-      if (formData.photo) {
-          formData.append('photo', formData.photo);
+      formData.append('name', e.target.name.value);
+      formData.append('phone', e.target.phone.value);
+      formData.append('location', e.target.location.value);
+      formData.append('issue', e.target.issue.value);
+      formData.append('description', e.target.description.value);
+      if (e.target.photo.files[0]) {
+          formData.append('photo', e.target.photo.files[0]);
       }
   
       try {
@@ -180,8 +194,14 @@ const Widget = () => {
       }
   };
   
+  
 
     return (
+        <div className="bg-slate-800 text-foreground min-h-screen flex flex-col">
+        
+        <img src="hack.webp" alt="Logo" className="h-70 " />
+       
+        
         <div className="bg-slate-800 text-foreground min-h-screen">
             <nav className="fixed top-0 left-0 right-0 bg-slate-600 bg-opacity-75 shadow-md p-6 flex justify-between items-center z-10 backdrop-blur-sm" style={{ height: '120px' }}>
                 <div className="flex items-center">
@@ -344,7 +364,7 @@ const Widget = () => {
                     )}
                 </div>
 
-                <ScrollElement name="report-problem" className="mt-16 bg-white p-6 rounded-lg shadow-lg" style={{ marginTop: '50px' }}>
+                <ScrollElement name="report-problem" className="mt-16 bg-white p-6 max-w-xs  rounded-lg shadow-lg" style={{ marginTop: '50px' }}>
                     <h1 className="text-2xl font-semibold text-gray-800 mb-4">Report a Problem</h1>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
@@ -418,10 +438,29 @@ const Widget = () => {
                             />
                         </div>
                         <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-lg">Submit</button>
-                    </form>
+                    </form> 
                 </ScrollElement>
+                <div className="flex flex-col items-center  ml-6 flex-1">
+                            <img src="bhargav.jpeg" alt="Indore" className="h-96 w-96 rounded-lg shadow-lg" />
+                            <h2 className="text-white text-3xl font-bold mt-4">Crack the Code to Digital Indore</h2>
+                        </div>
             </main>
-        </div>
+            <footer className="bg-slate-600 bg-opacity-75 p-6 text-center mt-auto">
+                <p className="text-foreground">Developed by ManasJain ( team : Threat Trackers) </p>
+                <div className="flex justify-center mt-0">
+                    <a href="https://www.linkedin.com/in/your-profile" target="_blank" rel="noopener noreferrer" className="text-foreground mx-2 hover:text-blue-500">
+                        <FaLinkedin size={24} />
+                    </a>
+                    <a href="https://www.instagram.com/your-profile" target="_blank" rel="noopener noreferrer" className="text-foreground mx-2 hover:text-pink-500">
+                        <FaInstagram size={24} />
+                    </a>
+                    <a href="https://www.facebook.com/your-profile" target="_blank" rel="noopener noreferrer" className="text-foreground mx-2 hover:text-blue-700">
+                        <FaFacebook size={24} />
+                    </a>
+                </div>
+            </footer>
+
+        </div> </div>
     );
 };
 
