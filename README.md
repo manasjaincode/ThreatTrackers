@@ -87,6 +87,11 @@ The project aims to:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 📜 Presentation 
+
+Checkout our presentation (https://docs.google.com/presentation/d/1_X-0sqRWdtrR-Ai9k8du_-D-KYJUEB9w/edit?usp=sharing&ouid=107488396513088637728&rtpof=true&sd=true).
+
+
 ---
 
 ## 🙏 Acknowledgements
