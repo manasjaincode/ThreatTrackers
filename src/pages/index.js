@@ -22,7 +22,7 @@ const Widget = () => {
         'Bhawarkua',
         'Rajiv Nagar'
     ];
-
+  // Detailed water level data for specific houses in each area
     const detailedData = {
         'Geeta Bhawan': { houses: ['House 1', 'House 2', 'House 3'], waterLevels: [1.2, 1.5, 1.8] },
         'Saket Nagar': { houses: ['House 1', 'House 2'], waterLevels: [2.0, 2.3] },
@@ -55,14 +55,14 @@ const Widget = () => {
             },
         ],
     });
-
+ // State for various data used in the component
  const [data, setData] = useState([]);
     const [detailChartData, setDetailChartData] = useState(null);
     const [selectedArea, setSelectedArea] = useState(null);
     const [inputId, setInputId] = useState('');
     const [houseChartData, setHouseChartData] = useState(null);
     const [selectedTimeRange, setSelectedTimeRange] = useState('today');
-
+ // State for the form data in the "Report a Problem" section
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
@@ -94,7 +94,7 @@ const Widget = () => {
             }
         }
     };
-
+// Handle change in the house ID input field
     const handleIdChange = (event) => {
         setInputId(event.target.value);
     };
@@ -118,7 +118,7 @@ const Widget = () => {
             alert('House ID not found');
         }
     };
-
+ // Handle change in the time range selection
     const handleTimeRangeChange = (event) => {
         const newRange = event.target.value;
         setSelectedTimeRange(newRange);
@@ -140,7 +140,7 @@ const Widget = () => {
             }
         }
     };
-
+    // Handle change in the form fields
     const handleChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'photo') {
@@ -156,6 +156,7 @@ const Widget = () => {
         }
     };
 
+    // Fetch data from the server when the component mounts
     useEffect(() => {
       fetch('http://localhost:4000/api/data')
         .then((response) => response.json())
@@ -165,7 +166,7 @@ const Widget = () => {
     if (!data) {
       return <div>Loading...</div>;
     }
-  
+     // Handle form submission for reporting a problem
   
     const handleSubmit = async (e) => {
       e.preventDefault();
@@ -195,7 +196,7 @@ const Widget = () => {
   };
   
   
-
+  // Rendering the component
     return (
         <div className="bg-slate-800 text-foreground min-h-screen flex flex-col">
         
@@ -363,7 +364,7 @@ const Widget = () => {
                         </div>
                     )}
                 </div>
-
+ {/* "Report a Problem" section */}
                 <ScrollElement name="report-problem" className="mt-16 bg-white p-6 max-w-xs  rounded-lg shadow-lg" style={{ marginTop: '50px' }}>
                     <h1 className="text-2xl font-semibold text-gray-800 mb-4">Report a Problem</h1>
                     <form onSubmit={handleSubmit}>
@@ -445,6 +446,7 @@ const Widget = () => {
                             <h2 className="text-white text-3xl font-bold mt-4">Crack the Code to Digital Indore</h2>
                         </div>
             </main>
+                   {/* Footer with social media links */}
             <footer className="bg-slate-600 bg-opacity-75 p-6 text-center mt-auto">
                 <p className="text-foreground">Developed by ManasJain ( team : Threat Trackers) </p>
                 <div className="flex justify-center mt-0">
@@ -459,9 +461,9 @@ const Widget = () => {
                     </a>
                 </div>
             </footer>
-
+                                
         </div> </div>
     );
 };
 
-export default Widget;
+export default Widget;          
