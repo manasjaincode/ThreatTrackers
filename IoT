@@ -1,0 +1,26 @@
+const int buzzerPin = 8;  // Digital pin connected to the buzzer
+
+void setup() {
+  Serial.begin(9600);      // Initialize serial communication
+  pinMode(buzzerPin, OUTPUT);  // Set buzzerPin as an output
+}
+
+void loop() {
+  float voltage = analogRead(A0) * (5.0 / 1023.0);  // Read and convert voltage
+  int leakDetected = voltage > 1.26 ? 1 : 0;  // Output 1 if leak is detected, 0 otherwise
+
+  // Send data in the format required by Serial Plotter
+  Serial.print("Voltage:");
+  Serial.print(voltage);
+  Serial.print("\tLeak Detected:");
+  Serial.println(leakDetected);  // Output 0 or 1 for leak detection
+
+  // Control the buzzer
+  if (leakDetected) {
+    digitalWrite(buzzerPin, HIGH);  // Turn on the buzzer
+  } else {
+    digitalWrite(buzzerPin, LOW);   // Turn off the buzzer
+  }
+
+  delay(1000);  // Delay to allow for readable updates
+}

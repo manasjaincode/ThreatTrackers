@@ -1,0 +1,155 @@
+#define WIFI_SSID "OnePlus NordCE 5G"
+#define WIFI_PASSWORD "kalilinux"
+
+
+
+
+
+
+
+
+
+// Insert Firebase project API Key
+#define API_KEY "AIzaSyCUkw3NEhlb2QIjJGEH2rmNxDdg6sCfe5A"
+
+// Insert RTDB URL
+#define DATABASE_URL "https://ivdripmonitoringnew-default-rtdb.asia-southeast1.firebasedatabase.app/"
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#include <WiFi.h>
+#include <Firebase_ESP_Client.h>
+#include <LiquidCrystal_I2C.h>
+#include <HX711.h>
+
+// Include the TokenHelper and RTDBHelper
+#include "addons/TokenHelper.h"
+#include "addons/RTDBHelper.h"
+
+LiquidCrystal_I2C LCD = LiquidCrystal_I2C(0x27, 16, 2);
+
+// Network credentials
+#define WIFI_SSID "OnePlus NordCE 5G"
+#define WIFI_PASSWORD "kalilinux"
+
+
+// Insert Firebase project API Key
+#define API_KEY "AIzaSyCUkw3NEhlb2QIjJGEH2rmNxDdg6sCfe5A"
+
+// Insert RTDB URL
+#define DATABASE_URL "https://ivdripmonitoringnew-default-rtdb.asia-southeast1.firebasedatabase.app/"
+
+
+
+// Firebase objects
+FirebaseData fbdo;
+FirebaseAuth auth;
+FirebaseConfig config;
+
+// Load cell pins
+#define LOAD_CELL_DOUT_PIN 16
+#define LOAD_CELL_SCK_PIN 4
+
+// Buzzer and valve pins
+#define BUZZER_PIN 32
+#define VALVE_PIN 33
+
+HX711 loadCell;
+
+// Calibration factor (replace with actual value)
+const float calibrationFactor = 123.45;
+
+void setup() {
+  Serial.begin(115200);
+  LCD.begin();
+  LCD.backlight();
+
+  // Connect to WiFi
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("WiFi connected.");
+
+  // Initialize Firebase
+  config.api_key = API_KEY;
+  config.database_url = DATABASE_URL;
+  Firebase.begin(&config, &auth);
+
+  // Initialize load cell
+  loadCell.begin(LOAD_CELL_DOUT_PIN, LOAD_CELL_SCK_PIN);
+
+  pinMode(BUZZER_PIN, OUTPUT);
+  pinMode(VALVE_PIN, OUTPUT);
+
+  // Initialize Firebase signup
+  if (Firebase.signUp(&config, &auth, "", "")) {
+    Serial.println("Firebase signed up successfully");
+  } else {
+    Serial.println("Firebase signup failed");
+    Serial.println(config.signer.signupError.message.c_str());
+  }
+
+  // Callback function for token status
+  config.token_status_callback = tokenStatusCallback;
+}
+
+void loop() {
+  if (Firebase.ready()) {
+    // Read load cell value
+    float loadCellValue = getLoadCellValue();
+    float weightInGrams = loadCellValue * calibrationFactor;
+
+    // Update Firebase with load cell data in grams
+    if (Firebase.RTDB.setFloat(&fbdo, "load_cell_data_grams", weightInGrams)) {
+      Serial.println("Load cell data updated successfully (grams)");
+    } else {
+      Serial.println("Failed to update load cell data (grams)");
+      Serial.println("Reason: " + fbdo.errorReason());
+    }
+
+    // Convert weight to kilograms
+    float weightInKilograms = weightInGrams / 1000.0;
+
+    // Update Firebase with load cell data in kilograms
+    if (Firebase.RTDB.setFloat(&fbdo, "load_cell_data_kilograms", weightInKilograms)) {
+      Serial.println("Load cell data updated successfully (kilograms)");
+    } else {
+      Serial.println("Failed to update load cell data (kilograms)");
+      Serial.println("Reason: " + fbdo.errorReason());
+    }
+
+    // Display weight on LCD
+    displayWeightOnLCD(weightInGrams, weightInKilograms);
+
+    // Control buzzer and valve based on weight
+    controlBuzzerAndValve(weightInGrams);
+  }
+}
+
+// Function to read load cell value
+float getLoadCellValue() {
+  return loadCell.read();
+}
+
+// Function to display weight on LCD
+void displayWeightOnLCD(float weightInGrams, float weightInKilograms) {
+  LCD.clear();
+  LCD.setCursor(0, 0);
+  LCD.print("Weight (g): ");
+  LCD.print(weightInGrams);
+  LCD.setCursor(0, 1);
+  LCD.print("Weight (kg): ");
+  LCD.print(weightInKilograms);
+}
+
+// Function to control buzzer and valve based on weight
+void controlBuzzerAndValve(float weightInGrams) {
+  if (weightInGrams < 100) {
+    digitalWrite(BUZZER_PIN, HIGH);
+    digitalWrite(VALVE_PIN, LOW);
+  } else {
+    digitalWrite(BUZZER_PIN, LOW);
+    digitalWrite(VALVE_PIN, HIGH);
+  }
+}
